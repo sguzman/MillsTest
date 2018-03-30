@@ -94,7 +94,14 @@ object Init {
   def removeHttp(s: List[String]): Unit = s.foreach(httpCache.remove)
 
   implicit final class DocWrap(doc: Browser#DocumentType) {
-    def Map(s: String) = doc.>>(element(s))
-    def FlatMap(s: String) = doc.>>(elementList(s))
+    def Map(s: String) = doc.>?>(element(s)) match {
+      case None => throw new Exception(s)
+      case Some(v) => v
+    }
+
+    def FlatMap(s: String) = doc.>?>(elementList(s)) match {
+      case None => throw new Exception(s)
+      case Some(v) => v
+    }
   }
 }
