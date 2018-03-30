@@ -16,7 +16,7 @@ object Main {
       doc.FlatMap(".list-group-item > div > a[href]")
         .map(a => Anime(a.innerHtml, a.attr("href")))
         .asJson.spaces4
-    }, s => decode[List[Anime]](s))
+    }, s => decode[List[Anime]](s), deleteThis = false)
 
     final case class AnimePage(img: String, p: String, eps: List[String])
     anime.map{a =>
