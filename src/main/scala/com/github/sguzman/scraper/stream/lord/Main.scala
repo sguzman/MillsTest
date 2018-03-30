@@ -56,7 +56,8 @@ object Main {
       "https://ww4.animejolt.com/devilman-crybaby-episode-4/",
       "https://ww4.animejolt.com/hakyuu-houshin-engi-episode-11/",
       "https://ww4.animejolt.com/devilman-crybaby-episode-3/",
-      "https://ww4.animejolt.com/hataraku-onii-san-episode-13/"
+      "https://ww4.animejolt.com/hataraku-onii-san-episode-13/",
+      "https://ww4.animejolt.com/diabolik-lovers-ova-episode-episode-1/"
     )
 
     episodes
