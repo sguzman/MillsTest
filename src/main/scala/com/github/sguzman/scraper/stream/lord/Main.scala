@@ -77,9 +77,9 @@ object Main{
 
   implicit final class StrWrap(str: String) {
     def enum = str.toLowerCase match {
-      case "sub" | "subbed" => EpType.SUB
-      case "dub" | "dubbed" => EpType.DUB
-      case "raw" => EpType.RAW
+      case "sub" | "subbed" => 1
+      case "dub" | "dubbed" => 2
+      case "raw" => 3
       case _ => throw new Exception(str)
     }
 
@@ -144,7 +144,7 @@ object Main{
           }) {doc =>
             val links = doc.flatMap(epsLink)
             val titles = doc.flatMap(epsTitle)
-            val types = doc.flatMap(epsType).map(_.innerHtml.doc.flatMap("i.btn-xs").map(_.innerHtml.enum))
+            val types: Seq[Set[Int]] = doc.flatMap(epsType).map(a => Set(a.innerHtml.doc.flatMap("i.btn-xs").map(_.innerHtml.enum): _*))
 
             Show(
               doc.map(title).innerHtml,
