@@ -43,8 +43,13 @@ object Main {
       }
     }
 
+    val ignore = Seq(
+      "https://ww4.animejolt.com/3-gatsu-no-lion-2nd-season-episode-21/"
+    )
+
     episodes
       .flatMap(_.eps)
+      .filter(a => !ignore.contains(a))
       .map{a =>
         casc(a, doc => doc.Map("iframe#video_frame[src]").attr("src"))(s => Right(s))
       }
