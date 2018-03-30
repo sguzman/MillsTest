@@ -41,7 +41,13 @@ object Main {
       "https://ww4.animejolt.com/spiritpact-2-episode-6/",
       "https://ww4.animejolt.com/saiki-kusuo-no--nan-tv-episode-82/",
       "https://ww4.animejolt.com/one-piece-episode-830/",
-      "https://ww4.animejolt.com/naruto-shippuuden-movie-7-the-last-episode-episode-episode-1/"
+      "https://ww4.animejolt.com/naruto-shippuuden-movie-7-the-last-episode-episode-episode-1/",
+      "https://ww4.animejolt.com/boruto-naruto-next-generations-episode-52/",
+      "https://ww4.animejolt.com/devilman-crybaby-episode-7/",
+      "https://ww4.animejolt.com/haikyuu-jump-festa-2014-special-episode-episode-1/",
+      "https://ww4.animejolt.com/overlord-ii-episode-13/",
+      "https://ww4.animejolt.com/toji-no-miko-episode-13/",
+      "https://ww4.animejolt.com/takunomi-episode-12/"
     )
 
     episodes
