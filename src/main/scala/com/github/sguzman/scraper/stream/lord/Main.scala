@@ -24,7 +24,7 @@ object Main{
     cache
   }
 
-  def writeHttp: Unit = {
+  def writeHttp(): Unit = {
     val file = new File("./http.data")
     val out = new FileOutputStream(file)
     httpCache.writeTo(out)
@@ -40,7 +40,7 @@ object Main{
     cache
   }
 
-  def writeItem: Unit = {
+  def writeItem(): Unit = {
     val file = new File("./item.data")
     val out = new FileOutputStream(file)
     itemCache.writeTo(out)
@@ -133,7 +133,7 @@ object Main{
           val epsTitle = "ul.newmanga > li > div > i.anititle"
           val epsType = "ul.newmanga > li > div > i.btn-xs.btn-subbed"
 
-          get[Cacheable[Show], Show](url, new Cacheable[Show] {
+          get[Cacheable[Show], Show](s"https://www.animebam.net$url", new Cacheable[Show] {
             override def contains(s: String): Boolean = itemCache.cache.contains(s)
             override def apply(s: String): Show = itemCache.cache(s)
             override def put(s: String, b: Show): Unit = itemCache = itemCache.addCache((s, b))
