@@ -21,8 +21,6 @@ message Show {
     repeated Episode eps = 4;
 }
 
-message Items {
-    repeated string links = 1;
-    map<string, Show> cache = 2;
-    map<string, string> episode = 3;
+message Store {
+    repeated Show items = 1;
 }
