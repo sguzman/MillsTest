@@ -99,7 +99,7 @@ object Main{
       value
     }
     else if (httpCache.cache.contains(url)) {
-      scribe.info(s"Missed item cache for $url")
+      scribe.info(s"Missed item cache for $url but hit http cache")
       val html = httpCache.cache(url)
       val result = f(JsoupBrowser().parseString(Brotli.decompress(html.toByteArray)))
       cache.put(url, result)
