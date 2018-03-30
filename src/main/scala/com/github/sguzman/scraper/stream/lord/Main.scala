@@ -47,7 +47,10 @@ object Main {
       "https://ww4.animejolt.com/haikyuu-jump-festa-2014-special-episode-episode-1/",
       "https://ww4.animejolt.com/overlord-ii-episode-13/",
       "https://ww4.animejolt.com/toji-no-miko-episode-13/",
-      "https://ww4.animejolt.com/takunomi-episode-12/"
+      "https://ww4.animejolt.com/takunomi-episode-12/",
+      "https://ww4.animejolt.com/devilman-crybaby-episode-6/",
+      "https://ww4.animejolt.com/hakata-tonkotsu-ramens-episode-12/",
+      "https://ww4.animejolt.com/test-show-episode-episode-15-61120/"
     )
 
     episodes
