@@ -4,10 +4,19 @@ import com.github.sguzman.scraper.stream.lord.Init.DocWrap
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.circe.parser.decode
+import net.ruippeixotog.scalascraper.browser.Browser
 
 import scala.util.{Failure, Success}
 
 object Main {
+  def casc[A](s: String, proc: Browser#DocumentType => String)(dec: String => Either[io.circe.Error, A]) =
+    util.Try{
+      Init.cascade(s, proc, dec)
+    } match {
+      case Success(v) => v
+      case Failure(e) => throw new Exception(s"$s; ${e.getMessage}")
+    }
+
   def main(args: Array[String]): Unit = {
     final case class Anime(title: String, link: String)
     val url = "https://ww4.animejolt.com/anime/"
@@ -37,14 +46,7 @@ object Main {
     episodes
       .flatMap(_.eps)
       .map{a =>
-      util.Try{
-        Init.cascade(a, {doc =>
-          doc.Map("iframe#video_frame[src]").attr("src")
-        }, s => Right(s))
-      } match {
-        case Success(v) => v
-        case Failure(e) => throw new Exception(s"$a; ${e.getMessage}")
+        casc(a, doc => doc.Map("iframe#video_frame[src]").attr("src"))(s => Right(s))
       }
-    }
   }
 }
