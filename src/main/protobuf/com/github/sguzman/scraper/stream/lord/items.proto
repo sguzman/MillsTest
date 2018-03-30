@@ -23,10 +23,16 @@ message Show {
     repeated Episode eps = 5;
 }
 
+message Ep {
+    string sub = 1;
+    string dub = 2;
+    string raw = 3;
+}
+
 message Items {
     repeated string links = 1;
     map<string, Show> cache = 2;
-    map<string, string> episode = 3;
+    map<string, Ep> episode = 3;
 }
 
 message Store {
