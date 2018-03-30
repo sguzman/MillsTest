@@ -12,7 +12,7 @@ object Main {
     val anime = Init.casc(url, {doc =>
       doc.FlatMap(".list-group-item > div > a[href]")
         .map(a => Anime(a.innerHtml, a.attr("href")))
-        .asJson.spaces4
+        .asJson.noSpaces
     }) (s => decode[List[Anime]](s)).par
 
 
@@ -23,7 +23,7 @@ object Main {
             doc.Map("div.series-container.group > img[src]").attr("src"),
             doc.Map("div.series-container.group > p").text,
             doc.FlatMap("li.list-group-item > div > a[href]").map(_.attr("href"))
-          ).asJson.spaces4
+          ).asJson.noSpaces
         }) (s => decode[AnimePage](s))
     }
 
