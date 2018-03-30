@@ -2,17 +2,12 @@ syntax = "proto3";
 
 package com.github.sguzman.scraper.stream.lord;
 
-enum EpType {
-    NONE = 0;
-    SUB = 1;
-    DUB = 2;
-    RAW = 3;
-}
-
 message Episode {
     string link = 1;
     string name = 2;
-    repeated EpType type = 3;
+    bool sub = 3;
+    bool dub = 4;
+    bool raw = 5;
 }
 
 message Show {
