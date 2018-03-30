@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message Http {
+    map<string, string> cache = 1;
+}
