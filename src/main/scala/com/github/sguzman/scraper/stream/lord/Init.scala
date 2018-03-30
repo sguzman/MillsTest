@@ -85,10 +85,15 @@ object Init {
     getHttpCache(url, proc, dec)
   }
 
-  def cascade[A](url: String, proc: Browser#DocumentType => String, dec: String => Either[io.circe.Error, A], newKey: String => Unit = println): A = {
-    if (cache.contains(url)) getItemCache(url, dec)
+  def cascade[A](url: String, proc: Browser#DocumentType => String, dec: String => Either[io.circe.Error, A], newKey: String => Unit = println, deleteThis: Boolean = true): A = {
+    val output = if (cache.contains(url)) getItemCache(url, dec)
     else if (httpCache.contains(url)) getHttpCache(url, proc, dec)
     else get(url, proc, dec)
+    if (deleteThis) {
+      httpCache.remove(url)
+    }
+
+    output
   }
 
   def removeHttp(s: List[String]): Unit = s.foreach(httpCache.remove)

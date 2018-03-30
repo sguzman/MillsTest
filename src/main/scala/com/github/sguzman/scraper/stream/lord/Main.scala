@@ -2,8 +2,8 @@ package com.github.sguzman.scraper.stream.lord
 
 import com.github.sguzman.scraper.stream.lord.Init.DocWrap
 import io.circe.generic.auto._
-import io.circe.parser.decode
 import io.circe.syntax._
+import io.circe.parser.decode
 
 import scala.util.{Failure, Success}
 
