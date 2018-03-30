@@ -3,6 +3,7 @@ package com.github.sguzman.scraper.stream.lord
 import java.io.{File, FileInputStream, FileOutputStream}
 import java.net.SocketTimeoutException
 
+import com.github.sguzman.scraper.stream.lord.items._
 import http.HttpCache
 import net.ruippeixotog.scalascraper.browser.{Browser, JsoupBrowser}
 import net.ruippeixotog.scalascraper.dsl.DSL._
@@ -73,6 +74,15 @@ object Main{
     }
   }
 
+  implicit final class StrWrap(str: String) {
+    def enum = str.toLowerCase match {
+      case "sub" => EpType.SUB
+      case "dub" => EpType.DUB
+      case "raw" => EpType.RAW
+      case _ => throw new Exception(str)
+    }
+  }
+
   trait Cacheable[B] {
     def contains(s: String): Boolean
     def apply(s: String): B
@@ -99,13 +109,54 @@ object Main{
     }
 
   def main(args: Array[String]): Unit = {
-    val seed = "https://www.animebam.net/series"
-    val items = "div.container > div.row > div.col-md-6 > div.panel.panel-default > div.panel-footer > ul.series_alpha > li > a[href]"
-    get[Cacheable[Seq[String]], Seq[String]](seed, new Cacheable[Seq[String]] {
-      override def contains(s: String): Boolean = itemCache.links.nonEmpty
-      override def apply(s: String): Seq[String] = itemCache.links
-      override def put(s: String, b: Seq[String]): Unit = itemCache = itemCache.addAllLinks(b)
-    }) (_.flatMap(items).map(_.attr("href")).toSeq)
+    {
+      val seed = "https://www.animebam.net/series"
+      val select = "div.container > div.row > div.col-md-6 > div.panel.panel-default > div.panel-footer > ul.series_alpha > li > a[href]"
+      get[Cacheable[Seq[String]], Seq[String]](seed, new Cacheable[Seq[String]] {
+        override def contains(s: String): Boolean = itemCache.links.nonEmpty
+        override def apply(s: String): Seq[String] = itemCache.links
+        override def put(s: String, b: Seq[String]): Unit = itemCache = itemCache.addAllLinks(b)
+      }) (_.flatMap(select).map(_.attr("href")).toSeq)
+    }
+
+    {
+      itemCache
+        .links
+        .par
+        .map{url =>
+          val title = "div.media > div.media-body > div.first > h1"
+          val img = "div.media > a.pull-left > img[src]"
+          val desc = "body > div.fattynav > div > div > div > div > div.second > p.ptext"
+          val genres = "ul.tagcat > li > a[href]"
+
+          val epsLink = "ul.newmanga > li > div > a[href]"
+          val epsTitle = "ul.newmanga > li > div > i.anititle"
+          val epsType = "ul.newmanga > li > div > i.btn-xs.btn-subbed"
+
+          get[Cacheable[Show], Show](url, new Cacheable[Show] {
+            override def contains(s: String): Boolean = itemCache.cache.contains(s)
+            override def apply(s: String): Show = itemCache.cache(s)
+            override def put(s: String, b: Show): Unit = itemCache = itemCache.addCache((s, b))
+          }) {doc =>
+            Show(
+              doc.map(title).innerHtml,
+              doc.map(img).attr("src"),
+              doc.map(desc).innerHtml,
+              doc.flatMap(genres).map(_.innerHtml),
+              doc.flatMap(epsLink)
+                .zip(doc.flatMap(epsTitle))
+                .zip(doc.flatMap(epsType))
+                .map(a =>
+                  Episode(
+                    a._1._1.attr("href"),
+                    a._1._2.innerHtml,
+                    a._2.innerHtml.enum
+                  )
+                )
+            )
+          }
+        }
+    }
 
     scribe.info("done")
   }
