@@ -157,7 +157,8 @@ object Main{
                   Episode(
                     a._1.attr("href"),
                     titles(a._2).innerHtml,
-                    types(a._2)
+                    if (types(a._2).isEmpty) Seq(EpType.NONE)
+                    else types(a._2)
                   )
                 )
             )
