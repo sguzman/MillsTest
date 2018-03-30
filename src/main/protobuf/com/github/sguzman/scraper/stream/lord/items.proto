@@ -26,3 +26,7 @@ message Items {
     map<string, Show> cache = 2;
     map<string, string> episode = 3;
 }
+
+message Store {
+    repeated Show shows = 1;
+}
