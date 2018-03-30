@@ -16,9 +16,10 @@ message Episode {
 
 message Show {
     string title = 1;
-    repeated string genres = 2;
+    string img = 2;
     string desc = 3;
-    repeated Episode eps = 4;
+    repeated string genres = 4;
+    repeated Episode eps = 5;
 }
 
 message Items {
