@@ -36,6 +36,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "net.ruippeixotog" %% "scala-scraper" % "2.1.0",
   "org.scalaj" %% "scalaj-http" % "2.3.0",
+  "com.outr" %% "scribe" % "2.3.1" ,
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapbVersion % "protobuf"
 )
 
