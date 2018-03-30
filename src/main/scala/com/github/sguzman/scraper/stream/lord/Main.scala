@@ -19,7 +19,7 @@ object Main {
     }, s => decode[List[Anime]](s), deleteThis = false)
 
     final case class AnimePage(img: String, p: String, eps: List[String])
-    anime.map{a =>
+    val episodes = anime.map{a =>
       util.Try{
         Init.cascade(a.link, {doc =>
           AnimePage(
@@ -28,6 +28,19 @@ object Main {
             doc.FlatMap("li.list-group-item > div > a[href]").map(_.attr("href"))
           ).asJson.spaces4
         }, s => decode[AnimePage](s))
+      } match {
+        case Success(v) => v
+        case Failure(e) => throw new Exception(s"$a; ${e.getMessage}")
+      }
+    }
+
+    episodes
+      .flatMap(_.eps)
+      .map{a =>
+      util.Try{
+        Init.cascade(a, {doc =>
+          doc.Map("iframe#video_frame[src]").attr("src")
+        }, s => Right(s))
       } match {
         case Success(v) => v
         case Failure(e) => throw new Exception(s"$a; ${e.getMessage}")
