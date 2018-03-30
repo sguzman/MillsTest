@@ -2,5 +2,4 @@
 *.log
 target/
 .idea/
-items.json
-items.data
+*.data
