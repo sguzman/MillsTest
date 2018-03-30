@@ -50,7 +50,9 @@ object Main {
       "https://ww4.animejolt.com/takunomi-episode-12/",
       "https://ww4.animejolt.com/devilman-crybaby-episode-6/",
       "https://ww4.animejolt.com/hakata-tonkotsu-ramens-episode-12/",
-      "https://ww4.animejolt.com/test-show-episode-episode-15-61120/"
+      "https://ww4.animejolt.com/test-show-episode-episode-15-61120/",
+      "https://ww4.animejolt.com/devilman-crybaby-episode-5/",
+      "https://ww4.animejolt.com/hakumei-to-mikochi-episode-12/"
     )
 
     episodes
