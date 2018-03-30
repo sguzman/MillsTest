@@ -1,5 +1,11 @@
+import com.trueaccord.scalapb.compiler.Version.scalapbVersion
+
+PB.targets in Compile := Seq(
+  scalapb.gen() -> (sourceManaged in Compile).value
+)
+
 /** Name of project */
-name := "AnimeJolt"
+name := "BamScraper"
 
 /** Organization */
 organization := "com.github.sguzman"
@@ -30,9 +36,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "net.ruippeixotog" %% "scala-scraper" % "2.1.0",
   "org.scalaj" %% "scalaj-http" % "2.3.0",
-  "io.circe" %% "circe-core" % "0.9.2",
-  "io.circe" %% "circe-parser" % "0.9.2",
-  "io.circe" %% "circe-generic" % "0.9.2",
+  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapbVersion % "protobuf"
 )
 
 /** Make sure to fork on run */
