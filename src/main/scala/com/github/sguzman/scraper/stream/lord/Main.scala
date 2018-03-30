@@ -29,6 +29,7 @@ object Main {
 
     val ignore = Seq(
       "https://ww4.animejolt.com/3-gatsu-no-lion-2nd-season-episode-21/",
+      "https://ww4.animejolt.com/ane-log-episode-episode-2/"
     )
 
     episodes
