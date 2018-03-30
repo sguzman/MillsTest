@@ -1,5 +1,5 @@
 /** Name of project */
-name := "StreamLordScraper"
+name := "AnimeJolt"
 
 /** Organization */
 organization := "com.github.sguzman"
