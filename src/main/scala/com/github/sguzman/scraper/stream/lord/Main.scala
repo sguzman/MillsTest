@@ -76,7 +76,7 @@ object Main{
 
   implicit final class StrWrap(str: String) {
     def enum = str.toLowerCase match {
-      case "sub" => EpType.SUB
+      case "sub" | "subbed" => EpType.SUB
       case "dub" => EpType.DUB
       case "raw" => EpType.RAW
       case _ => throw new Exception(str)
