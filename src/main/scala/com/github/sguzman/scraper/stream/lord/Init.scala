@@ -96,6 +96,14 @@ object Init {
     output
   }
 
+  def casc[A](s: String, proc: Browser#DocumentType => String)(dec: String => Either[io.circe.Error, A]) =
+    util.Try{
+      Init.cascade(s, proc, dec)
+    } match {
+      case Success(v) => v
+      case Failure(e) => throw new Exception(s"$s; ${e.getMessage}")
+    }
+
   def removeHttp(s: List[String]): Unit = s.foreach(httpCache.remove)
 
   implicit final class DocWrap(doc: Browser#DocumentType) {
