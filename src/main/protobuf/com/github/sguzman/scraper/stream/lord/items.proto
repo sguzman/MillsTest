@@ -11,7 +11,7 @@ enum EpType {
 message Episode {
     string link = 1;
     string name = 2;
-    EpType type = 3;
+    repeated EpType type = 3;
 }
 
 message Show {
