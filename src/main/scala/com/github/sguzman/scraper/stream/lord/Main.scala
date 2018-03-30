@@ -40,7 +40,7 @@ object Main{
   }
 
   def writeItem: Unit = {
-    val file = new File("./http.data")
+    val file = new File("./item.data")
     val out = new FileOutputStream(file)
     itemCache.writeTo(out)
     out.close()
@@ -82,7 +82,7 @@ object Main{
   def get[A <: Cacheable[B], B](url: String, cache: A) (f: Browser#DocumentType => B): B =
     if (cache.contains(url)) {
       val value = cache(url)
-      scribe.debug(s"Hit cache for key $url -> $value")
+      scribe.info(s"Hit cache for key $url -> $value")
       value
     }
     else if (httpCache.cache.contains(url)) {
@@ -92,19 +92,21 @@ object Main{
       cache.put(url, result)
       get[A, B](url, cache)(f)
     } else {
-      scribe.trace(s"Missed http cache... calling $url")
+      scribe.info(s"Missed http cache... calling $url")
       val html = retryHttpGet(url)
       httpCache = httpCache.addCache((url, html))
       get[A, B](url, cache)(f)
     }
 
   def main(args: Array[String]): Unit = {
-    val seed = "https://www.animebam.net/"
+    val seed = "https://www.animebam.net/series"
     val items = "div.container > div.row > div.col-md-6 > div.panel.panel-default > div.panel-footer > ul.series_alpha > li > a[href]"
     get[Cacheable[Seq[String]], Seq[String]](seed, new Cacheable[Seq[String]] {
       override def contains(s: String): Boolean = itemCache.links.nonEmpty
       override def apply(s: String): Seq[String] = itemCache.links
       override def put(s: String, b: Seq[String]): Unit = itemCache = itemCache.addAllLinks(b)
     }) (_.flatMap(items).map(_.attr("href")).toSeq)
+
+    scribe.info("done")
   }
 }
