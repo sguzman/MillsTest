@@ -4,7 +4,7 @@ import java.io.{DataInputStream, DataOutputStream}
 
 import scala.sys.process._
 
-object Brotli extends App {
+object Brotli {
   def compress(s: String): Array[Byte] = {
     scribe.info("Compressing with Brotli...")
 
