@@ -5,6 +5,7 @@ import java.net.SocketTimeoutException
 
 import com.github.sguzman.scraper.stream.lord.http.HttpCache
 import com.github.sguzman.scraper.stream.lord.items._
+import com.google.protobuf.ByteString
 import net.ruippeixotog.scalascraper.browser.{Browser, JsoupBrowser}
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.Element
@@ -100,13 +101,13 @@ object Main{
     else if (httpCache.cache.contains(url)) {
       scribe.info(s"Missed item cache for $url")
       val html = httpCache.cache(url)
-      val result = f(JsoupBrowser().parseString(html))
+      val result = f(JsoupBrowser().parseString(Brotli.decompress(html.toByteArray)))
       cache.put(url, result)
       get[A, B](url, cache)(f)
     } else {
       scribe.info(s"Missed http cache... calling $url")
       val html = retryHttpGet(url)
-      httpCache = httpCache.addCache((url, html))
+      httpCache = httpCache.addCache((url, ByteString.copyFrom(Brotli.compress(html))))
       get[A, B](url, cache)(f)
     }
 
