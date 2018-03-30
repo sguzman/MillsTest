@@ -3,5 +3,5 @@ syntax = "proto3";
 package com.github.sguzman.scraper.stream.lord;
 
 message HttpCache {
-    map<string, string> cache = 1;
+    map<string, bytes> cache = 1;
 }
