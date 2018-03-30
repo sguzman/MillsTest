@@ -49,8 +49,8 @@ object Main{
 
   Runtime.getRuntime.addShutdownHook(new Thread {
     override def run(): Unit = {
-      writeItem
-      writeHttp
+      writeItem()
+      writeHttp()
     }
   })
 
@@ -77,7 +77,7 @@ object Main{
   implicit final class StrWrap(str: String) {
     def enum = str.toLowerCase match {
       case "sub" | "subbed" => EpType.SUB
-      case "dub" => EpType.DUB
+      case "dub" | "dubbed" => EpType.DUB
       case "raw" => EpType.RAW
       case _ => throw new Exception(str)
     }
@@ -109,7 +109,7 @@ object Main{
     }
 
   def main(args: Array[String]): Unit = {
-    {
+    locally {
       val seed = "https://www.animebam.net/series"
       val select = "div.container > div.row > div.col-md-6 > div.panel.panel-default > div.panel-footer > ul.series_alpha > li > a[href]"
       get[Cacheable[Seq[String]], Seq[String]](seed, new Cacheable[Seq[String]] {
@@ -119,7 +119,7 @@ object Main{
       }) (_.flatMap(select).map(_.attr("href")).toSeq)
     }
 
-    {
+    locally {
       itemCache
         .links
         .par
