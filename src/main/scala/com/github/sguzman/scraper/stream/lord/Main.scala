@@ -9,12 +9,12 @@ object Main {
   def main(args: Array[String]): Unit = {
     final case class Anime(title: String, link: String)
     val url = "https://ww4.animejolt.com/anime/"
-
     val anime = Init.casc(url, {doc =>
       doc.FlatMap(".list-group-item > div > a[href]")
         .map(a => Anime(a.innerHtml, a.attr("href")))
         .asJson.spaces4
-    }) (s => decode[List[Anime]](s))
+    }) (s => decode[List[Anime]](s)).par
+
 
     final case class AnimePage(img: String, p: String, eps: List[String])
     val episodes = anime.map{a =>
@@ -27,9 +27,11 @@ object Main {
         }) (s => decode[AnimePage](s))
     }
 
+
     val ignore = Seq(
       "https://ww4.animejolt.com/3-gatsu-no-lion-2nd-season-episode-21/",
-      "https://ww4.animejolt.com/ane-log-episode-episode-2/"
+      "https://ww4.animejolt.com/ane-log-episode-episode-2/",
+      "https://ww4.animejolt.com/ao-haru-ride-unwritten-episode-episode-episode-1/"
     )
 
     episodes
