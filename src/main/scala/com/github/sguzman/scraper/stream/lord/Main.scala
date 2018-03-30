@@ -31,7 +31,17 @@ object Main {
     val ignore = Seq(
       "https://ww4.animejolt.com/3-gatsu-no-lion-2nd-season-episode-21/",
       "https://ww4.animejolt.com/ane-log-episode-episode-2/",
-      "https://ww4.animejolt.com/ao-haru-ride-unwritten-episode-episode-episode-1/"
+      "https://ww4.animejolt.com/ao-haru-ride-unwritten-episode-episode-episode-1/",
+      "https://ww4.animejolt.com/basilisk-ouka-ninpouchou-episode-13/",
+      "https://ww4.animejolt.com/black-clover-tv-episode-26/",
+      "https://ww4.animejolt.com/darling-in-the-franxx-episode-12/",
+      "https://ww4.animejolt.com/devilman-crybaby-episode-8/",
+      "https://ww4.animejolt.com/marchen-madchen-episode-9/",
+      "https://ww4.animejolt.com/wake-up-girls-shin-shou-episode-7/",
+      "https://ww4.animejolt.com/spiritpact-2-episode-6/",
+      "https://ww4.animejolt.com/saiki-kusuo-no--nan-tv-episode-82/",
+      "https://ww4.animejolt.com/one-piece-episode-830/",
+      "https://ww4.animejolt.com/naruto-shippuuden-movie-7-the-last-episode-episode-episode-1/"
     )
 
     episodes
