@@ -111,15 +111,26 @@ object Main{
       get[A, B](url, cache)(f)
     }
 
+  def get[A](s: String)
+             (cont: String => Boolean)
+             (appl: String => A)
+             (pu: (String, A) => Unit)
+             (f: Browser#DocumentType => A): A =
+    get[Cacheable[A], A](s, new Cacheable[A] {
+      override def contains(s: String) = cont(s)
+      override def apply(s: String) = appl(s)
+      override def put(s: String, b: A): Unit = pu(s, b)
+  }) (f)
+
   def main(args: Array[String]): Unit = {
     locally {
       val seed = "https://www.animebam.net/series"
       val select = "div.container > div.row > div.col-md-6 > div.panel.panel-default > div.panel-footer > ul.series_alpha > li > a[href]"
-      get[Cacheable[Seq[String]], Seq[String]](seed, new Cacheable[Seq[String]] {
-        override def contains(s: String): Boolean = itemCache.links.nonEmpty
-        override def apply(s: String): Seq[String] = itemCache.links
-        override def put(s: String, b: Seq[String]): Unit = itemCache = itemCache.addAllLinks(b)
-      }) (_.flatMap(select).map(_.attr("href")).toSeq)
+      get(seed
+      ) (s => itemCache.links.nonEmpty
+      ) (s => itemCache.links
+      ) ((s, b) => itemCache = itemCache.addAllLinks(b)
+      ) (_.flatMap(select).map(_.attr("href")).toSeq)
     }
 
     locally {
@@ -137,11 +148,7 @@ object Main{
           val epsTitle = "ul.newmanga > li > div > i.anititle"
           val epsType = "ul.newmanga > li > div"
 
-          get[Cacheable[Show], Show](s"https://www.animebam.net$url", new Cacheable[Show] {
-            override def contains(s: String): Boolean = itemCache.cache.contains(s)
-            override def apply(s: String): Show = itemCache.cache(s)
-            override def put(s: String, b: Show): Unit = itemCache = itemCache.addCache((s, b))
-          }) {doc =>
+          get[Show](s"https://www.animebam.net$url") (itemCache.cache.contains) (itemCache.cache) ((s, b) => itemCache = itemCache.addCache((s, b))) {doc =>
             val links = doc.flatMap(epsLink)
             val titles = doc.flatMap(epsTitle)
             val types: Seq[Set[Int]] = doc.flatMap(epsType).map(a => Set(a.innerHtml.doc.flatMap("i.btn-xs").map(_.innerHtml.enum): _*))
@@ -157,14 +164,38 @@ object Main{
                   Episode(
                     a._1.attr("href"),
                     titles(a._2).innerHtml,
-                    if (types(a._2).isEmpty) Seq(EpType.NONE)
-                    else types(a._2)
+                    types(a._2).contains(1),
+                    types(a._2).contains(2),
+                    types(a._2).contains(3)
                   )
                 )
             )
           }
         }
     }
+
+/*    locally {
+      itemCache.cache.values
+        .flatMap{a =>
+          a.eps.map{b =>
+            val url = s"https://www.animebam.net${b.link}"
+            val sub = "#subbed-ABVideo"
+            val dub = "#dubbed-ABVideo"
+            val raw = "#raw-ABVideo"
+            get[Cacheable[Ep], Ep](url, new Cacheable[Ep] {
+              override def contains(s: String) = itemCache.episode.contains(s)
+              override def apply(s: String) = itemCache.episode(s)
+              override def put(s: String, b: Ep): Unit = itemCache.episode(s, b)
+            }) {doc =>
+              Ep(
+                if (b.sub) doc.map("iframe#subbed-ABVideo[src]").attr("src") else "",
+                if (b.dub) doc.map("iframe#dubbed-ABVideo[src]").attr("src") else "",
+                if (b.raw) doc.map("iframe#raw-ABVideo[src]").attr("src") else ""
+              )
+            }
+          }
+        }
+    }*/
 
     scribe.info("done")
   }
