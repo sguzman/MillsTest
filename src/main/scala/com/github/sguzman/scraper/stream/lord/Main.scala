@@ -6,7 +6,8 @@ import java.net.SocketTimeoutException
 import http.HttpCache
 import net.ruippeixotog.scalascraper.browser.{Browser, JsoupBrowser}
 import net.ruippeixotog.scalascraper.dsl.DSL._
-import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{elementList, element}
+import net.ruippeixotog.scalascraper.model.Element
+import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{element, elementList}
 import scalaj.http.Http
 
 import scala.language.reflectiveCalls
@@ -22,7 +23,7 @@ object Main{
     cache
   }
 
-  def writeHttp = {
+  def writeHttp: Unit = {
     val file = new File("./http.data")
     val out = new FileOutputStream(file)
     httpCache.writeTo(out)
@@ -38,7 +39,7 @@ object Main{
     cache
   }
 
-  def writeItem = {
+  def writeItem: Unit = {
     val file = new File("./http.data")
     val out = new FileOutputStream(file)
     itemCache.writeTo(out)
@@ -61,12 +62,12 @@ object Main{
   }
 
   implicit final class DocWrap(doc: Browser#DocumentType) {
-    def map(s: String) = doc.>?>(element(s)) match {
+    def map(s: String): Element = doc.>?>(element(s)) match {
       case Some(v) => v
       case None => throw new Exception(s)
     }
 
-    def flatMap(s: String) = doc.>?>(elementList(s)) match {
+    def flatMap(s: String): List[Element] = doc.>?>(elementList(s)) match {
       case Some(v) => v
       case None => throw new Exception(s)
     }
@@ -79,27 +80,31 @@ object Main{
   }
 
   def get[A <: Cacheable[B], B](url: String, cache: A) (f: Browser#DocumentType => B): B =
-    if (cache.contains(url)) cache(url)
+    if (cache.contains(url)) {
+      val value = cache(url)
+      scribe.debug(s"Hit cache for key $url -> $value")
+      value
+    }
     else if (httpCache.cache.contains(url)) {
       scribe.info(s"Missed item cache for $url")
       val html = httpCache.cache(url)
       val result = f(JsoupBrowser().parseString(html))
       cache.put(url, result)
-      get(url, cache)(f)
+      get[A, B](url, cache)(f)
     } else {
-      scribe.debug(s"Missed http cache... calling $url")
+      scribe.trace(s"Missed http cache... calling $url")
       val html = retryHttpGet(url)
       httpCache = httpCache.addCache((url, html))
-      get(url, cache)(f)
+      get[A, B](url, cache)(f)
     }
 
   def main(args: Array[String]): Unit = {
     val seed = "https://www.animebam.net/"
     val items = "div.container > div.row > div.col-md-6 > div.panel.panel-default > div.panel-footer > ul.series_alpha > li > a[href]"
-    get(seed, new Cacheable[Seq[String]] {
-      override def contains(s: String) = itemCache.links.nonEmpty
-      override def apply(s: String) = itemCache.links
+    get[Cacheable[Seq[String]], Seq[String]](seed, new Cacheable[Seq[String]] {
+      override def contains(s: String): Boolean = itemCache.links.nonEmpty
+      override def apply(s: String): Seq[String] = itemCache.links
       override def put(s: String, b: Seq[String]): Unit = itemCache = itemCache.addAllLinks(b)
-    }) (_.flatMap(items))
+    }) (_.flatMap(items).map(_.attr("href")).toSeq)
   }
 }
