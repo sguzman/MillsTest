@@ -6,6 +6,11 @@ import io.circe.parser.decode
 import io.circe.syntax._
 
 object Main {
+  def d[A](f: String => Either[io.circe.Error, A]) (s: String) = f(s) match {
+    case Right(v) => v
+    case Left(e) => throw new Exception(e.getMessage)
+  }
+
   def main(args: Array[String]): Unit = {
     final case class Anime(title: String, link: String)
     val url = "https://ww4.animejolt.com/anime/"
@@ -64,8 +69,26 @@ object Main {
       .flatMap(_.eps)
       .filter(!_.stripSuffix("/").endsWith("-"))
       .filter(a => !ignore.contains(a))
-      .map{a =>
+      .foreach{a =>
         Init.casc(a, doc => doc.Map("iframe#video_frame[src]").attr("src"))(s => Right(s))
       }
+
+    final case class Model(title: String, img: String, desc: String, eps: List[String])
+    val list = d(decode[List[Anime]]) (Init.cache(url))
+
+    val json = list.map{a =>
+      val page = d(decode[AnimePage]) (Init.cache(a.link))
+      Model(
+        a.title,
+        page.img,
+        page.p,
+        page.eps
+          .filter(!_.stripSuffix("/").endsWith("-"))
+          .filter(a => !ignore.contains(a))
+          map Init.cache
+      )
+    }.asJson.spaces4
+
+    Init.write("./store.json", json)
   }
 }
