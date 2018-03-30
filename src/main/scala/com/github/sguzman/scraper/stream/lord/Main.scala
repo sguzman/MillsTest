@@ -3,8 +3,8 @@ package com.github.sguzman.scraper.stream.lord
 import java.io.{File, FileInputStream, FileOutputStream}
 import java.net.SocketTimeoutException
 
+import com.github.sguzman.scraper.stream.lord.http.HttpCache
 import com.github.sguzman.scraper.stream.lord.items._
-import http.HttpCache
 import net.ruippeixotog.scalascraper.browser.{Browser, JsoupBrowser}
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.Element
@@ -81,6 +81,8 @@ object Main{
       case "raw" => EpType.RAW
       case _ => throw new Exception(str)
     }
+
+    def doc = JsoupBrowser().parseString(str)
   }
 
   trait Cacheable[B] {
@@ -130,27 +132,31 @@ object Main{
           val genres = "ul.tagcat > li > a[href]"
 
           val epsLink = "ul.newmanga > li > div > a[href]"
+
           val epsTitle = "ul.newmanga > li > div > i.anititle"
-          val epsType = "ul.newmanga > li > div > i.btn-xs.btn-subbed"
+          val epsType = "ul.newmanga > li > div"
 
           get[Cacheable[Show], Show](s"https://www.animebam.net$url", new Cacheable[Show] {
             override def contains(s: String): Boolean = itemCache.cache.contains(s)
             override def apply(s: String): Show = itemCache.cache(s)
             override def put(s: String, b: Show): Unit = itemCache = itemCache.addCache((s, b))
           }) {doc =>
+            val links = doc.flatMap(epsLink)
+            val titles = doc.flatMap(epsTitle)
+            val types = doc.flatMap(epsType).map(_.innerHtml.doc.flatMap("i.btn-xs").map(_.innerHtml.enum))
+
             Show(
               doc.map(title).innerHtml,
               doc.map(img).attr("src"),
               doc.map(desc).innerHtml,
               doc.flatMap(genres).map(_.innerHtml),
               doc.flatMap(epsLink)
-                .zip(doc.flatMap(epsTitle))
-                .zip(doc.flatMap(epsType))
+                .zipWithIndex
                 .map(a =>
                   Episode(
-                    a._1._1.attr("href"),
-                    a._1._2.innerHtml,
-                    a._2.innerHtml.enum
+                    a._1.attr("href"),
+                    titles(a._2).innerHtml,
+                    types(a._2)
                   )
                 )
             )
