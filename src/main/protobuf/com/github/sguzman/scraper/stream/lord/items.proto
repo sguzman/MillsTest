@@ -3,9 +3,10 @@ syntax = "proto3";
 package com.github.sguzman.scraper.stream.lord;
 
 enum EpType {
-    SUB = 0;
-    DUB = 1;
-    RAW = 2;
+    NONE = 0;
+    SUB = 1;
+    DUB = 2;
+    RAW = 3;
 }
 
 message Episode {
