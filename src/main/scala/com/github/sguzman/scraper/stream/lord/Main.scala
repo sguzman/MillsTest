@@ -54,7 +54,9 @@ object Main {
       "https://ww4.animejolt.com/devilman-crybaby-episode-5/",
       "https://ww4.animejolt.com/hakumei-to-mikochi-episode-12/",
       "https://ww4.animejolt.com/devilman-crybaby-episode-4/",
-      "https://ww4.animejolt.com/hakyuu-houshin-engi-episode-11/"
+      "https://ww4.animejolt.com/hakyuu-houshin-engi-episode-11/",
+      "https://ww4.animejolt.com/devilman-crybaby-episode-3/",
+      "https://ww4.animejolt.com/hataraku-onii-san-episode-13/"
     )
 
     episodes
