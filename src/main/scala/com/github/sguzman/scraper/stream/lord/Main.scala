@@ -136,7 +136,7 @@ object Main{
       )(_.flatMap(select).map(_.attr("href")).toSeq)
     }
 
-      locally {
+    locally {
         itemCache.links.par
         .map{url =>
           val title = "div.media > div.media-body > div.first > h1"
