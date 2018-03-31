@@ -149,7 +149,7 @@ object Main{
           val epsTitle = "ul.newmanga > li > div > i.anititle"
           val epsType = "ul.newmanga > li > div"
 
-          get[Show](s"https://www.animebam.net$url") (s => itemCache.cache.contains(s)) (s => itemCache.cache(s)) ((s, b) => itemCache = itemCache.addCache((s, b))) {doc =>
+          get[Show](s"https://www.animebam.net$url") (itemCache.cache.contains) (itemCache.cache) ((s, b) => itemCache = itemCache.addCache((s, b))) {doc =>
             val links = doc.flatMap(epsLink)
             val titles = doc.flatMap(epsTitle)
             val types: Seq[Set[Int]] = doc.flatMap(epsType).map(a => Set(a.innerHtml.doc.flatMap("i.btn-xs").map(_.innerHtml.enum): _*))
@@ -176,18 +176,14 @@ object Main{
       }
 
     locally {
-      itemCache.cache.values
+      itemCache.cache.values.par
         .flatMap{a =>
           a.eps.map{b =>
             val url = s"https://www.animebam.net${b.link}"
             val sub = "#subbed-ABVideo"
             val dub = "#dubbed-ABVideo"
             val raw = "#raw-ABVideo"
-            get[Cacheable[Ep], Ep](url, new Cacheable[Ep] {
-              override def contains(s: String) = itemCache.episode.contains(s)
-              override def apply(s: String) = itemCache.episode(s)
-              override def put(s: String, b: Ep): Unit = itemCache.episode(s, b)
-            }) {doc =>
+            get[Ep](url) (itemCache.episode.contains) (itemCache.episode) ((s, b) => itemCache.episode(s, b)) {doc =>
               Ep(
                 if (b.sub) doc.map("iframe#subbed-ABVideo[src]").attr("src") else "",
                 if (b.dub) doc.map("iframe#dubbed-ABVideo[src]").attr("src") else "",
