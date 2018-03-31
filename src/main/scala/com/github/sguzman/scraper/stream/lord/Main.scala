@@ -175,7 +175,7 @@ object Main{
         }
       }
 
-/*    locally {
+    locally {
       itemCache.cache.values
         .flatMap{a =>
           a.eps.map{b =>
@@ -196,7 +196,7 @@ object Main{
             }
           }
         }
-    }*/
+    }
 
     scribe.info("done")
   }
