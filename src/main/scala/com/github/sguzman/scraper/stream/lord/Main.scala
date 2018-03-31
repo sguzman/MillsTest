@@ -108,7 +108,10 @@ object Main{
       scribe.info(s"Missed http cache... calling $url")
       val html = retryHttpGet(url)
       httpCache = httpCache.addCache((url, ByteString.copyFrom(Brotli.compress(html))))
-      get[A, B](url, cache)(f)
+      val result = f(JsoupBrowser().parseString(html))
+      scribe.info(s"After HTTP request, got key $url -> $result")
+      cache.put(url, result)
+      result
     }
 
   def get[A](s: String)
