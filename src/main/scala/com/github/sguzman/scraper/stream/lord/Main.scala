@@ -68,6 +68,11 @@ object Main{
       case None => throw new Exception(s"$s $a")
     }
 
+    def maybeMap[A](s: String, f: Element => A, a: A): A = doc.>?>(element(s)) match {
+      case Some(v) => f(v)
+      case None => a
+    }
+
     def flatMap(s: String): List[Element] = doc.>?>(elementList(s)) match {
       case Some(v) => v
       case None => throw new Exception(s)
@@ -185,9 +190,9 @@ object Main{
             val raw = "#raw-ABVideo"
             get[Ep](url) (itemCache.episode.contains) (itemCache.episode) ((s, b) => itemCache = itemCache.addEpisode((s, b))) {doc =>
               Ep(
-                if (b.sub) doc.map("div#subbed-ABVideo > iframe[src]", url).attr("src") else "",
-                if (b.dub) doc.map("div#dubbed-ABVideo > iframe[src]", url).attr("src") else "",
-                if (b.raw) doc.map("div#raw-ABVideo > iframe[src]", url).attr("src") else ""
+                if (b.sub) doc.maybeMap("div#subbed-ABVideo > iframe[src]", _.attr("src"), "") else "",
+                if (b.dub) doc.maybeMap("div#dubbed-ABVideo > iframe[src]", _.attr("src"), "") else "",
+                if (b.raw) doc.maybeMap("div#raw-ABVideo > iframe[src]", _.attr("src"), "") else ""
               )
             }
           }
