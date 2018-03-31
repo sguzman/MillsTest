@@ -126,48 +126,52 @@ object Main{
   }) (f)
 
   def main(args: Array[String]): Unit = {
-    val seed = "https://www.animebam.net/series"
-    val select = "div.container > div.row > div.col-md-6 > div.panel.panel-default > div.panel-footer > ul.series_alpha > li > a[href]"
-    val animes = get(seed
-    ) (s => itemCache.links.nonEmpty
-    ) (s => itemCache.links
-    ) ((s, b) => itemCache = itemCache.addAllLinks(b)
-    ) (_.flatMap(select).map(_.attr("href")).toSeq)
+    locally {
+      val seed = "https://www.animebam.net/series"
+      val select = "div.container > div.row > div.col-md-6 > div.panel.panel-default > div.panel-footer > ul.series_alpha > li > a[href]"
+      val animes = get(seed
+      )(s => itemCache.links.nonEmpty
+      )(s => itemCache.links
+      )((s, b) => itemCache = itemCache.addAllLinks(b)
+      )(_.flatMap(select).map(_.attr("href")).toSeq)
+    }
 
-    val episodes = animes.par
-      .map{url =>
-        val title = "div.media > div.media-body > div.first > h1"
-        val img = "div.media > a.pull-left > img[src]"
-        val desc = "body > div.fattynav > div > div > div > div > div.second > p.ptext"
-        val genres = "ul.tagcat > li > a[href]"
+      locally {
+        itemCache.links.par
+        .map{url =>
+          val title = "div.media > div.media-body > div.first > h1"
+          val img = "div.media > a.pull-left > img[src]"
+          val desc = "body > div.fattynav > div > div > div > div > div.second > p.ptext"
+          val genres = "ul.tagcat > li > a[href]"
 
-        val epsLink = "ul.newmanga > li > div > a[href]"
+          val epsLink = "ul.newmanga > li > div > a[href]"
 
-        val epsTitle = "ul.newmanga > li > div > i.anititle"
-        val epsType = "ul.newmanga > li > div"
+          val epsTitle = "ul.newmanga > li > div > i.anititle"
+          val epsType = "ul.newmanga > li > div"
 
-        get[Show](s"https://www.animebam.net$url") (s => itemCache.cache.contains(s)) (s => itemCache.cache(s)) ((s, b) => itemCache = itemCache.addCache((s, b))) {doc =>
-          val links = doc.flatMap(epsLink)
-          val titles = doc.flatMap(epsTitle)
-          val types: Seq[Set[Int]] = doc.flatMap(epsType).map(a => Set(a.innerHtml.doc.flatMap("i.btn-xs").map(_.innerHtml.enum): _*))
+          get[Show](s"https://www.animebam.net$url") (s => itemCache.cache.contains(s)) (s => itemCache.cache(s)) ((s, b) => itemCache = itemCache.addCache((s, b))) {doc =>
+            val links = doc.flatMap(epsLink)
+            val titles = doc.flatMap(epsTitle)
+            val types: Seq[Set[Int]] = doc.flatMap(epsType).map(a => Set(a.innerHtml.doc.flatMap("i.btn-xs").map(_.innerHtml.enum): _*))
 
-          Show(
-            doc.map(title).innerHtml,
-            doc.map(img).attr("src"),
-            doc.map(desc).innerHtml,
-            doc.flatMap(genres).map(_.innerHtml),
-            doc.flatMap(epsLink)
-              .zipWithIndex
-              .map(a =>
-                Episode(
-                  a._1.attr("href"),
-                  titles(a._2).innerHtml,
-                  types(a._2).contains(1),
-                  types(a._2).contains(2),
-                  types(a._2).contains(3)
+            Show(
+              doc.map(title).innerHtml,
+              doc.map(img).attr("src"),
+              doc.map(desc).innerHtml,
+              doc.flatMap(genres).map(_.innerHtml),
+              doc.flatMap(epsLink)
+                .zipWithIndex
+                .map(a =>
+                  Episode(
+                    a._1.attr("href"),
+                    titles(a._2).innerHtml,
+                    types(a._2).contains(1),
+                    types(a._2).contains(2),
+                    types(a._2).contains(3)
+                  )
                 )
-              )
-          )
+            )
+          }
         }
       }
 
