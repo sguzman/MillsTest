@@ -85,6 +85,11 @@ object Main{
     def doc = JsoupBrowser().parseString(str)
   }
 
+  def arg[A,B](s: A, bool: Boolean, f: B): B = util.Try(f) match {
+    case Success(v) => v
+    case Failure(e) => throw new Exception(s"Value: $s; ${e.getMessage}")
+  }
+
   trait Cacheable[B] {
     def contains(s: String): Boolean
     def apply(s: String): B
@@ -185,9 +190,9 @@ object Main{
             val raw = "#raw-ABVideo"
             get[Ep](url) (itemCache.episode.contains) (itemCache.episode) ((s, b) => itemCache.addEpisode((s, b))) {doc =>
               Ep(
-                if (b.sub) doc.map("iframe#subbed-ABVideo[src]").attr("src") else "",
-                if (b.dub) doc.map("iframe#dubbed-ABVideo[src]").attr("src") else "",
-                if (b.raw) doc.map("iframe#raw-ABVideo[src]").attr("src") else ""
+                arg(b, b.sub, if (b.sub) doc.map("iframe#subbed-ABVideo[src]").attr("src") else ""),
+                arg(b, b.dub, if (b.dub) doc.map("iframe#dubbed-ABVideo[src]").attr("src") else ""),
+                arg(b, b.raw, if (b.raw) doc.map("iframe#raw-ABVideo[src]").attr("src") else "")
               )
             }
           }
