@@ -12,7 +12,6 @@ import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{element, elementList}
 import scalaj.http.Http
 
-import scala.language.reflectiveCalls
 import scala.util.{Failure, Success}
 
 object Main{
