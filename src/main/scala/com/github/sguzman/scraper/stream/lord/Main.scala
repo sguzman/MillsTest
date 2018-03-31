@@ -63,9 +63,9 @@ object Main{
   }
 
   implicit final class DocWrap(doc: Browser#DocumentType) {
-    def map(s: String): Element = doc.>?>(element(s)) match {
+    def map(s: String, a: String = ""): Element = doc.>?>(element(s)) match {
       case Some(v) => v
-      case None => throw new Exception(s)
+      case None => throw new Exception(s"$s $a")
     }
 
     def flatMap(s: String): List[Element] = doc.>?>(elementList(s)) match {
@@ -83,11 +83,6 @@ object Main{
     }
 
     def doc = JsoupBrowser().parseString(str)
-  }
-
-  def arg[A,B](s: A, bool: Boolean, f: B): B = util.Try(f) match {
-    case Success(v) => v
-    case Failure(e) => throw new Exception(s"Value: $s; ${e.getMessage}")
   }
 
   trait Cacheable[B] {
@@ -190,9 +185,9 @@ object Main{
             val raw = "#raw-ABVideo"
             get[Ep](url) (itemCache.episode.contains) (itemCache.episode) ((s, b) => itemCache.addEpisode((s, b))) {doc =>
               Ep(
-                arg(b, b.sub, if (b.sub) doc.map("iframe#subbed-ABVideo[src]").attr("src") else ""),
-                arg(b, b.dub, if (b.dub) doc.map("iframe#dubbed-ABVideo[src]").attr("src") else ""),
-                arg(b, b.raw, if (b.raw) doc.map("iframe#raw-ABVideo[src]").attr("src") else "")
+                if (b.sub) doc.map("div#subbed-ABVideo > iframe[src]", url).attr("src") else "",
+                if (b.dub) doc.map("div#dubbed-ABVideo > iframe[src]", url).attr("src") else "",
+                if (b.raw) doc.map("div#raw-ABVideo > iframe[src]", url).attr("src") else ""
               )
             }
           }
