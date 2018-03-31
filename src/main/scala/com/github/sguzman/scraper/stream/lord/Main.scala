@@ -102,6 +102,7 @@ object Main{
       scribe.info(s"Missed item cache for $url but hit http cache")
       val html = httpCache.cache(url)
       val result = f(JsoupBrowser().parseString(Brotli.decompress(html.toByteArray)))
+      scribe.info(s"Got key $url -> $result")
       cache.put(url, result)
       result
     } else {
