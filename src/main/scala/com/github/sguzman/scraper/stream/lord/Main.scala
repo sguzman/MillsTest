@@ -131,7 +131,7 @@ object Main{
     ) ((s, b) => itemCache = itemCache.addAllLinks(b)
     ) (_.flatMap(select).map(_.attr("href")).toSeq)
 
-    val episodes = animes
+    val episodes = animes.par
       .map{url =>
         val title = "div.media > div.media-body > div.first > h1"
         val img = "div.media > a.pull-left > img[src]"
