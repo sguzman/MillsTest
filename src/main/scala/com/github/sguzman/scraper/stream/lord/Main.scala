@@ -94,7 +94,7 @@ object Main{
 
   def get[A <: Cacheable[B], B](url: String, cache: A) (f: Browser#DocumentType => B): B =
     if (cache.contains(url)) {
-      val value = cache(url)
+      val value = cache.apply(url)
       scribe.info(s"Hit cache for key $url -> $value")
       value
     }
