@@ -31,7 +31,7 @@ object Main{
     out.close()
   }
 
-  @volatile var itemCache = {
+  var itemCache = {
     val file = new File("./item.data")
     if (!file.exists) file.createNewFile()
     val in = new FileInputStream("./item.data")
