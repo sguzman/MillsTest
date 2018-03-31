@@ -183,7 +183,7 @@ object Main{
             val sub = "#subbed-ABVideo"
             val dub = "#dubbed-ABVideo"
             val raw = "#raw-ABVideo"
-            get[Ep](url) (itemCache.episode.contains) (itemCache.episode) ((s, b) => itemCache.episode(s, b)) {doc =>
+            get[Ep](url) (itemCache.episode.contains) (itemCache.episode) ((s, b) => itemCache.addEpisode(s, b)) {doc =>
               Ep(
                 if (b.sub) doc.map("iframe#subbed-ABVideo[src]").attr("src") else "",
                 if (b.dub) doc.map("iframe#dubbed-ABVideo[src]").attr("src") else "",
