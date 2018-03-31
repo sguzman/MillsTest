@@ -103,7 +103,7 @@ object Main{
       val html = httpCache.cache(url)
       val result = f(JsoupBrowser().parseString(Brotli.decompress(html.toByteArray)))
       cache.put(url, result)
-      get[A, B](url, cache)(f)
+      result
     } else {
       scribe.info(s"Missed http cache... calling $url")
       val html = retryHttpGet(url)
